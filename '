@@ -1,0 +1,44 @@
+/** @jsx h */
+import { h } from "preact";
+import Github from "../../../providers/Github.ts"
+import MainConfig from "../../../interfaces/MainConfig.ts"
+import { PageProps, Handlers } from "$fresh/server.ts";
+
+export const handler: Handlers<MainConfig | null> = {
+  async GET(_, ctx) {
+  const github = Github()
+    const { owner, repo } = ctx.params;
+    const mainConfig = await github.getMainConfig(owner, repo)
+    return ctx.render(mainConfig);
+  },
+};
+
+interface Props {
+  mainConfig: MainConfig,
+  postsTitles: string[]
+}
+
+export default function Page({ data }: PageProps<Props | null>) {
+  if (!data) {
+    return <h1>Main Config not found</h1>;
+  }
+
+  return (
+    <div>
+      <div className="header">
+        <img src={data.avatar} width={64} height={64} />
+        <h1>{data.title}</h1>
+        <div className="socials">
+          {
+            data.social ? 
+              data.social.map(({name, url, icon}) => {
+                return <a href={url} >{name}</a>          
+              })
+              : null
+          }
+        </div>
+      </div>
+      <p>{data.author}</p>
+    </div>
+  );
+}
