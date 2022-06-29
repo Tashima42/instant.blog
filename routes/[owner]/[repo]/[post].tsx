@@ -3,6 +3,7 @@ import { h } from "preact";
 import Github from "../../../providers/Github.ts"
 import Post from "../../../interfaces/Post.ts"
 import { PageProps, Handlers } from "$fresh/server.ts";
+import {tw} from "@twind"
 
 export const handler: Handlers<Post | null> = {
   async GET(_, ctx) {
@@ -19,9 +20,9 @@ export default function Page({ data }: PageProps<Post | null>) {
   }
 
   return (
-    <div>
-      <div className="header">
-        <h1>{data.title}</h1>
+    <div className="contents" class={tw`w-1/3 flex flex-col justify-end `}>
+      <div className="header" class={tw`mb-5`}>
+        <h1 class={tw`text-3xl`}>{data.title}</h1>
         <p>{data.date}</p>
       </div>
       <div className="body" dangerouslySetInnerHTML={{__html: data.content}}>
