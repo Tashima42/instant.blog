@@ -22,6 +22,11 @@ export default function Github() {
     owner: string,
     repo: string,
   ): Promise<MainConfig> {
+    const rawConfig = localStorage.getItem(`config-${owner}-${repo}`);
+    if (rawConfig) {
+      return JSON.parse(rawConfig);
+    }
+
     const { content } = await getRepositoryContent(
       owner,
       repo,
@@ -29,6 +34,9 @@ export default function Github() {
     );
     const c = base64.toString(content);
     const mainConfig: MainConfig = JSON.parse(c);
+
+    localStorage.setItem(`config-${owner}-${repo}`, JSON.stringify(mainConfig));
+
     return mainConfig;
   }
 
@@ -49,6 +57,11 @@ export default function Github() {
     repo: string,
     postName: string,
   ): Promise<Post> {
+    const rawPost = localStorage.getItem(`post-${owner}-${repo}-${postName}`);
+    if (rawPost) {
+      return JSON.parse(rawPost);
+    }
+
     const { content } = await getRepositoryContent(
       owner,
       repo,
@@ -58,7 +71,13 @@ export default function Github() {
     const { meta: { title, date }, content: contentMarkup } = Marked.parse(
       postContent,
     );
-    return { title, date, content: contentMarkup };
+    const post: Post = { title, date, content: contentMarkup };
+    localStorage.setItem(
+      `post-${owner}-${repo}-${postName}`,
+      JSON.stringify(post),
+    );
+
+    return post;
   }
 
   async function getRepositoryContent(
